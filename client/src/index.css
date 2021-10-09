@@ -1,0 +1,50 @@
+@import "../node_modules/bootstrap";
+
+.card-body{
+  background-color:brown;
+}
+.card-header{
+  padding: 5%;
+  border-color: rgb(33, 37, 41);
+  background-color:rgb(33, 37, 41);
+  font-size: 1.5rem;
+}
+.nav-link {
+  color: brown;
+}
+.nav-link:hover {
+  color: white;
+}
+
+.pull-right.nav-item {
+  position:absolute; right:0;
+}
+
+.btn-primary{
+  background-color: rgb(33, 37, 41) !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+.nav.nav-pills .nav-link.active {
+  background-color: rgb(33, 37, 41);
+  border-style: solid;
+  border-color: brown;
+  border-radius: 5%;
+  border-width: thin;
+}
+
+.Tooltips {
+  font-family: sans-serif;
+  text-align: center;
+
+  margin-top: 100px;
+  height: 200px;
+}
+
+
+
+
+
+
+
+

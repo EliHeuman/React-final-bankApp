@@ -1,0 +1,40 @@
+version: "2"
+services:
+    client:
+        build: './client'
+        restart: always
+        ports:
+            - '3000:3000'
+        depends_on:
+            - server
+        # working_dir: /client/src/app
+        # volumes:
+        #     - ./client:/client/src/app
+        # entrypoint: ["yarn", "start"]
+        links:
+            - server
+        networks:
+            - webappnetwork
+    server:
+        build: './server'
+        restart: always
+        volumes:
+            - ./server:/server       
+        ports:
+            - '8080:8080'
+        # entrypoint: ["yarn", "start"]
+        depends_on:
+           - mongo
+        networks:
+            - webappnetwork
+    mongo:
+        image: mongo
+        restart: always
+        container_name: mongodb
+        ports:
+            - '27017:27017'
+        networks:
+            - webappnetwork
+networks:
+    webappnetwork:
+        driver: bridge
