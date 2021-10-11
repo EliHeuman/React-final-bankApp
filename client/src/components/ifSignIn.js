@@ -15,8 +15,8 @@ const axios = require('axios');
         
         ctx.loginRes.pop();
         ctx.user.pop();
-        const url = `http://localhost:8080/account/find/${sessionEmail}`;
-        
+        // const url = `http://localhost:8080/account/find/${sessionEmail}`;
+        const url = `http://165.232.72.24:8080/account/find/${sessionEmail}`;
         await axios.get(url)
         .then((res) =>{
           ctx.user.push(...res.data);

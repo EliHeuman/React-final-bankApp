@@ -11,9 +11,6 @@ import Withdraw from './components/withdraw.js';
 import Logout from './components/logout';
 import Login from './components/login';
 
-// const apiUrl = `http://localhost:8080`;
-
-// async createUser() {
   
 function App (){
   const  getCookie = (cname) => {
