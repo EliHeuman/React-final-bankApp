@@ -1,8 +1,12 @@
 import React from 'react';
+import { withCookies } from "react-cookie";
 import {Card} from '../context';
 import badbank from '../images/bank.png';
+import {UserContext} from '../context';
 //Home Component.
-function Home(){
+function Home(props){
+  const ctx = React.useContext(UserContext);
+
   return (
 //Card Component.
   <>
@@ -30,4 +34,4 @@ function Home(){
   ); 
 };
 
-export default Home;
+export default withCookies(Home);

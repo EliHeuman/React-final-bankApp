@@ -1,16 +1,17 @@
 import React from 'react';
+import { Cookies , withCookies } from "react-cookie";
 import Nav from 'react-bootstrap/Nav';
 import ReactTooltip from 'react-tooltip';
 import Button from 'react-bootstrap/Button';
-import {UserContext, NameDisplay} from '../context.js';
-
+import DisplayName from './DisplayName';
+import {UserContext} from '../context.js';
 //Navbar Component.
 function NavBar(props){
+  let cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)Name\s*\=\s*([^;]*).*$)|^.*$/, "$1");
   const ctx = React.useContext(UserContext);
-  // const [show, setShow] = useState(true);
-  // useEffect(()=>{
-  //   setShow(ctx.auth[0].loggedIn);
-  // },[ctx.auth,show]);
+  console.log(ctx.user[0]);
+  console.log(Cookies.Name);
+  console.log(cookieValue);
   return(
   //Navbar usinng Bootstrap.
     <Nav variant="pills"  className="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -26,7 +27,7 @@ function NavBar(props){
               Welcome to RedRock bank page
             </ReactTooltip>
         </Nav.Link>
-{/* Withdraw button */}
+{/* Login button */}
         <Nav.Link data-tip data-for="login" href="#/login/" >
           Login
             <ReactTooltip id="login" place="top" effect="solid">
@@ -48,7 +49,7 @@ function NavBar(props){
             </ReactTooltip>
         </Nav.Link>
 {/* Withdraw button */}
-        <Nav.Link data-tip data-for="withdraw" href="#/withdraw/" loggedIn={ctx.auth[0].loggedIn} >
+        <Nav.Link data-tip data-for="withdraw" href="#/withdraw/">
           Withdraw
             <ReactTooltip id="withdraw" place="top" effect="solid">
               Here you can deposit withdraw from your account
@@ -70,7 +71,7 @@ function NavBar(props){
                 </Nav.Link>
         {/* User name */}
           <Nav.Item className="pull-right" >
-            <NameDisplay  dispalyName={ctx.dispalyName}/>
+            <DisplayName  dispalyName={cookieValue}/>
           </Nav.Item>
         </Nav>
 
@@ -78,4 +79,4 @@ function NavBar(props){
   );
 }
 
-export default NavBar;
+export default withCookies(NavBar);

@@ -88,15 +88,15 @@ res.send('User created \n');
 });
 
 // create user account
-app.get('/account/create/:name/:email/:password', async (req, res) => {
+app.post('/account/create/:name/:email/:password', async (req, res) => {
   //get list of users
   const users = await User.find();
   // check if account exists
     const userTest = await users.find( (user) => user.email === req.params.email);
           // if user exists, return error message
           if( userTest === req.params.email  || userTest !== undefined){
-              console.log('User already in exists');
-              res.status(200).send('User already in exists');    
+              console.log('User already exists');
+              res.status(200).send('User already exists');    
           }else{
               // else create user    
               const user = new User({

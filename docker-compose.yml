@@ -30,7 +30,7 @@ services:
     mongo:
         image: mongo
         restart: always
-        container_name: mongodb
+        container_name: mongodbtest
         ports:
             - '27017:27017'
         networks:

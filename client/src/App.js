@@ -1,6 +1,4 @@
-import React, { Component } from 'react';
-// import ReactDOM from 'react-dom';
-// import axios from 'axios';
+import React, { useEffect } from 'react';
 import './index.css';
 import { Route, HashRouter } from 'react-router-dom';
 import {UserContext} from './context';
@@ -12,52 +10,51 @@ import Deposit from './components/deposit.js';
 import Withdraw from './components/withdraw.js';
 import Logout from './components/logout';
 import Login from './components/login';
+
 // const apiUrl = `http://localhost:8080`;
 
+// async createUser() {
   
-class App extends Component {
+function App (){
+  const  getCookie = (cname) => {
+    let name = cname + "=";
+    let decodedCookie = decodeURIComponent(document.cookie);
+    let ca = decodedCookie.split(';');
+    for(let i = 0; i <ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) === ' ') {
+        c = c.substring(1);
+      }
+      if (c.indexOf(name) === 0) {
+        return c.substring(name.length, c.length);
+      }
+    }
+    return "";
+  };
+  console.log(getCookie('User'));
 
-      // async createUser() {
-      //   await axios.get(apiUrl + '/user-create');
-      //   this.loadUsers();
-      // }
-    
-      // async deleteAllUsers() {
-      //   await axios.get(apiUrl + '/users-delete');
-      //   this.setState({
-      //     users: [],
-      //   });
-      // }
-    
-      // async loadUsers() {
-      //   const res = await axios.get(apiUrl + '/users');
-      //   this.setState({
-      //     users: res.data,
-      //   });
-      // }
-    
-      // componentDidMount() {
-      //   this.loadUsers();
-      // }
-  render() {
+      useEffect(() => {
+        // POST request using axios inside useEffect React hook
+        console.log('testApp');
+    // empty dependency array means this effect will only run once (like componentDidMount in classes)
+    }, []);
     return (
   //Create routing to all components.
       <HashRouter>
   {/* Create a context provider and a users array to share data in the components. */}
         <UserContext.Provider value={{user:[], loginRes:[], auth:[{ loggedIn: false}], dispalyName :[]}}>
-          <Navbar/>
-            <Route path= "/" exact component={Home} />
-            <Route path= "/alldata" exact component={AllData} />
-            <Route path="/login/" component={Login} />
-            <Route path="/CreateAccount/" component={CreateAccount} />
-            <Route path="/deposit/" component={Deposit} />
-            <Route path="/withdraw/" component={Withdraw} />
-            <Route path="/logout/" component={Logout} />
-            {/* <NameDisplay/> */}
+          <Navbar />
+            <Route path= "/"              exact component={Home} />
+            <Route path= "/alldata"       exact component={AllData} />
+            <Route path="/login/"         exact component={Login} />
+            <Route path="/CreateAccount/" exact component={CreateAccount} />
+            <Route path="/deposit/"       exact component={Deposit} />
+            <Route path="/withdraw/"      exact component={Withdraw} />
+            <Route path="/logout/"        exact component={Logout} />    
         </UserContext.Provider>
       </HashRouter>
-    );
+    )
   }
-}
+
 
 export default App;

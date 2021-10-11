@@ -1,5 +1,5 @@
 //This Context page is for components that get used in more than one place.
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import 'bootstrap';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Button from 'react-bootstrap/Button';
@@ -142,25 +142,5 @@ function Card(props){
     );    
 };
 
-
-//set display name
-function NameDisplay(props){
-    const ctx = React.useContext(UserContext);
-    const [displayName, setDisplayName] = useState('');
-    const user = [props.dispalyName];
-    
-    useEffect(() =>{
-        setDisplayName(user);
-    },[user]);
-    
-    
-    
-    return (
-        <div className="navbar-brand">
-        {ctx.auth[0].loggedIn ? ( <>Logged in as {ctx.user[0].username}</> ):( <>{ctx.dispalyName[0]}</>)}
-        </div>
-    );
-};
-
 //export components
-export {Card, UserContext, ATM, Account, NameDisplay};
+export {Card, UserContext, ATM, Account};

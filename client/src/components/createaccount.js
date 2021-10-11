@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useCookies, withCookies } from "react-cookie";
 import {Card, UserContext} from '../context';
 import Button from 'react-bootstrap/Button';
 import InputGroup from 'react-bootstrap/InputGroup';
@@ -6,16 +7,48 @@ import FormControl from 'react-bootstrap/FormControl';
 import Col from 'react-bootstrap/Col';
 const axios = require('axios');
 
+
 //CreateAccount Component.
-function CreateAccount(){
-  const [show, setShow]         = React.useState(true);
+function CreateAccount(props){
+  const ctx = React.useContext(UserContext);
+  const [show, setShow]         = React.useState(ctx.auth[0].loggedIn ? false : true );
   const [status, setStatus]     = React.useState('');
   const [name, setName]         = React.useState('');
   const [email, setEmail]       = React.useState('');
   const [password, setPassword] = React.useState('');
   const [validButton, setvalidButton] = React.useState(true);
-  const ctx = React.useContext(UserContext);
-  // const response = [];
+  const [cookies, setCookie] = useCookies(["user"]);
+
+  //test if user is logedin
+  let cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)Name\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+
+  let sessionEmail = cookieValue.length > 0 ? props.allCookies.User.email : '';
+  console.log(sessionEmail);
+  useEffect(()=>{
+      if(!ctx.auth[0].loggedIn  && sessionEmail !== ''){
+        async function ifSignIn() {
+        let expires = new Date();
+        expires.setMinutes( expires.getMinutes() + 30 );
+        
+        ctx.loginRes.pop();
+        ctx.user.pop();
+        const url = `http://localhost:8080/account/find/${sessionEmail}`;
+        
+        await axios.get(url)
+        .then((res) =>{
+          ctx.user.push(...res.data);
+        }).catch((err) =>{
+          console.log(err);
+        });
+          ctx.auth[0].loggedIn = true;
+          setShow(false);
+          console.log('loggedIn: ' + ctx.auth[0].loggedIn);
+        }
+        ifSignIn();
+      }
+  },[]);  
+
+
 // Validation for the name state.
   function nameValidation(fieldName, fieldValue) {
     if (fieldValue.trim() === '') {
@@ -43,43 +76,59 @@ function CreateAccount(){
 //Validate and submit account data.
 async function handleCreate() {
   // console.log(name,email,password);
-    setTimeout(() => setStatus(''),4000);
+    let expires = new Date();
+    expires.setMinutes( expires.getMinutes() + 30 );
     if (
         nameValidation('Name', name) &&
         emailValidation(email      ) &&
         passwordValidation(password)
     ){
+      ctx.loginRes.pop();
      // console.log(name,email,password);
       const url = `http://localhost:8080/account/create/${name}/${email}/${password}`;
-     
-          // var res  = await fetch(url);
-          // var data = await res.json();    
-          // console.log(data);
-        await axios.get(url)
+      const  url2 = `http://localhost:8080/account/find/${email}`;
+      const testFetch = async () => {
+        await axios.post(url)
             .then((res) =>{
               ctx.loginRes.push(res.data);
-              ctx.dispalyName.push(res.data[0].username);
+              console.log(ctx.loginRes[0]);
             }).catch((err) =>{
               console.log(err);
             }).then(async () =>{
               if(ctx.loginRes[0] === 'Success'){
-                // ctx.user.pop();
-                const url = `http://localhost:8080/account/find/${email}`;
-                
-                await  axios.get(url)
-                        .then((res) =>{
-                          ctx.dispalyName.push(res.data[0].username);
-                          ctx.loginRes.push(res.data);
-                          ctx.user.push(res.data[0]);
-                          ctx.loginRes.pop();
-                        }).catch((err) =>{
-                          console.log(err);
-                        });
-                ctx.auth[0].loggedIn = true;
+              const  getUser = async () =>{
+                // Make a request for a user with a given email
+                await axios.get(url2)
+                  .then(function (response) {
+                    // handle success
+                    ctx.user.push(...response.data);
+                    setCookie('User', ctx.user[0], { 
+                      path: "/",
+                      expires
+                    });
+                    console.log(response);
+                  })
+                  .catch(function (error) {
+                    // handle error
+                    console.log(error);
+                  })
+                  .then(function () {
+                    // always executed
+                    ctx.auth[0].loggedIn = true;
+                    setCookie('Name', ctx.user[0].username, { 
+                      path: "/",
+                      expires,
+                    });
+                  });
+                };
+                  // const res = await  axios.get(url2).catch((err) =>{
+                    getUser();
               }
             });
+          };
+          testFetch();
        console.log('response: ' + ctx.loginRes);
-
+       console.log('loggedIn: ' + ctx.auth[0].loggedIn);
        setShow(false);
      } 
      return ;
@@ -90,7 +139,6 @@ async function handleCreate() {
     setEmail('');
     setPassword('');
     setShow(true);
-    ctx.loginRes.pop();
   }
 
   //Disables and enables the submit button.
@@ -103,14 +151,12 @@ async function handleCreate() {
     if(props.id === 'email' && props.value === '') setvalidButton((name === '') && (password === '') ? true : false);
     if(props.id === 'password' && props.value === '') setvalidButton((email === '') && (name === '') ? true : false);
     }
-
   return (
     <Card
       header="Create Account"
       status={status}
       body={ 
 //if log in is successful show component
-        !ctx.auth[0].loggedIn ? ( 
           show ? ( 
             <form>
               <InputGroup className="mb-3">
@@ -167,7 +213,7 @@ async function handleCreate() {
                 Create Account
               </Button>        
             </form> 
-              ):(
+              ):(!ctx.auth[0].loggedIn ? ( 
                 <div>
                 {/* Success */}
                 <h5>{`${ctx.loginRes}`}</h5>
@@ -180,17 +226,16 @@ async function handleCreate() {
                   Add an account
                 </Button>
                 </div>
-              )
               ):(
                   <div>
                   <h3>Welcom to BadBank you are logged in.<br/>
                    First log out before try to create a new account</h3>
-                   <h5>{`${ctx.loginRes}`}</h5>
+                   <h5>{`${ctx.loginRes[0]}`}</h5>
                   </div>
               )
-              }
+              )}
     />
   )
 }
 
-export default CreateAccount;
+export default withCookies(CreateAccount);

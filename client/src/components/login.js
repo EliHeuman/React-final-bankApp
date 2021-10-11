@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect }from 'react';
+import { useCookies, withCookies } from "react-cookie";
 import {Card, UserContext} from '../context';
 import Button from 'react-bootstrap/Button';
 import InputGroup from 'react-bootstrap/InputGroup';
@@ -6,14 +7,46 @@ import FormControl from 'react-bootstrap/FormControl';
 import Col from 'react-bootstrap/Col';
 const axios = require('axios');
 
+
 //CreateAccount Component.
-function Login(){
-  const [show, setShow]               = React.useState(true);
+function Login(props){
+  const ctx = React.useContext(UserContext);
+  const [show, setShow]               = React.useState(ctx.auth[0].loggedIn ? false : true);
   const [status, setStatus]           = React.useState('');
   const [email, setEmail]             = React.useState('');
   const [password, setPassword]       = React.useState('');
   const [validButton, setvalidButton] = React.useState(false);
-  const ctx = React.useContext(UserContext);
+  const [cookies, setCookie] = useCookies(["user"]);
+   //test if user is logedin
+   let cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)Name\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+
+   let sessionEmail = cookieValue.length > 0 ? props.allCookies.User.email : '';
+   console.log(sessionEmail);
+   useEffect(()=>{
+    if(!ctx.auth[0].loggedIn  && sessionEmail !== ''){
+      async function ifSignIn() {
+      let expires = new Date();
+      expires.setMinutes( expires.getMinutes() + 30 );
+      
+      ctx.loginRes.pop();
+      ctx.user.pop();
+      const url = `http://localhost:8080/account/find/${sessionEmail}`;
+      
+      await axios.get(url)
+      .then((res) =>{
+        ctx.user.push(...res.data);
+      }).catch((err) =>{
+        console.log(err);
+      });
+        ctx.auth[0].loggedIn = true;
+        setShow(false);
+        console.log('loggedIn: ' + ctx.auth[0].loggedIn);
+      }
+      ifSignIn();
+    }
+},[]);  
+
+
 // Validation for the email state.
   function emailValidation(email) {
     if (email.trim() === '') {
@@ -34,26 +67,35 @@ function Login(){
 async function handleLogin() {
   // console.log(name,email,password);
     setTimeout(() => setStatus(''),4000);
+    let expires = new Date();
+    expires.setMinutes( expires.getMinutes() + 30 );
     if (
         emailValidation(email      ) &&
         passwordValidation(password)
     ){
-                ctx.user.pop();
+                ctx.loginRes.pop();
                 const url = `http://localhost:8080/account/find/${email}`;
                 
                 await axios.get(url)
                 .then((res) =>{
                   ctx.loginRes.push(res.data);
+                  setCookie('User', res.data[0], { 
+                    path: "/",
+                    expires,
+                  });
                   ctx.dispalyName.push(res.data[0].username);
                   console.log(ctx.loginRes[0]);
                 }).catch((err) =>{
                   console.log(err);
                 }).then(() =>{
                 if(ctx.loginRes[0] !== 'User doesn\'t exists'){
-                    ctx.user.pop();
                     ctx.user.push(...ctx.loginRes[0]);
-                    ctx.loginRes.pop();
                     ctx.auth[0].loggedIn = true;
+                    ctx.loginRes[0] = 'Success';
+                    setCookie('Name', ctx.user[0].username, { 
+                      path: "/",
+                      expires,
+                    });
                   }
                 });
                   console.log('loggedIn: ' + ctx.auth[0].loggedIn);
@@ -66,7 +108,6 @@ async function handleLogin() {
     setEmail('');
     setPassword('');
     setShow(true);
-    ctx.loginRes.pop();
   }
 
   //Disables and enables the submit button.
@@ -74,15 +115,13 @@ async function handleLogin() {
     if(props.id === 'email') setEmail(props.value);
     if(props.id === 'password') setPassword(props.value);
     }
-
-  return (
+  return (<>
     <Card
       header="Login"
     //   title="Login to your account"
       status={status}
       body={ 
 //if log in is successful show component
-        !ctx.auth[0].loggedIn ? ( 
         show ? ( 
           <form>
             <InputGroup className="mb-3" >
@@ -122,9 +161,9 @@ async function handleLogin() {
               onClick={handleLogin}
             >
               Login
-            </Button>        
+            </Button>       
           </form> 
-            ):(
+            ):(!ctx.auth[0].loggedIn ? ( 
               <div>
               <h5>{`${ctx.loginRes}`}</h5>
               <Button
@@ -136,18 +175,17 @@ async function handleLogin() {
                 Try to login again
               </Button>
               </div>
-            )
             ):(
                   <div>
                   <h3>Welcom to BadBank you are logged in.<br/>
                    First log out before try to login</h3>
                    </div>
               )
+            )
         }
-    />
-    
-
+      />
+    </>
   )
 }
 
-export default Login;
+export default withCookies(Login);
