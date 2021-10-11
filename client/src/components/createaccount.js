@@ -31,7 +31,7 @@ function CreateAccount(props){
         expires.setMinutes( expires.getMinutes() + 30 );
         
         ctx.loginRes.pop();
-        ctx.user.pop();165.232.72.24
+        ctx.user.pop();
         //const url = `http://localhost:8080/account/find/${sessionEmail}`;
         const url = `http://165.232.72.24:8080/account/find/${sessionEmail}`;
         await axios.get(url)
