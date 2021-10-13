@@ -5,7 +5,9 @@ import Button from 'react-bootstrap/Button';
 import InputGroup from 'react-bootstrap/InputGroup';
 import FormControl from 'react-bootstrap/FormControl';
 import Col from 'react-bootstrap/Col';
+import SignInScreen from './SignInScreen.js'; 
 const axios = require('axios');
+
 
 
 //CreateAccount Component.
@@ -21,17 +23,19 @@ function Login(props){
    let cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)Name\s*\=\s*([^;]*).*$)|^.*$/, "$1");
 
    let sessionEmail = cookieValue.length > 0 ? props.allCookies.User.email : '';
+   let googleEmail  = cookieValue.length > 0 ? props.allCookies.Email : '';
    console.log(sessionEmail);
+
    useEffect(()=>{
-    if(!ctx.auth[0].loggedIn  && sessionEmail !== ''){
+    if(!ctx.auth[0].loggedIn  && (sessionEmail !== '' || googleEmail !== '') ){
       async function ifSignIn() {
       let expires = new Date();
-      expires.setMinutes( expires.getMinutes() + 30 );
+      expires.setMinutes( expires.getMinutes() + 250 );
       
       ctx.loginRes.pop();
       ctx.user.pop();
-      // const url = `http://localhost:8080/account/find/${sessionEmail}`;
-      const url = `http://165.232.72.24:8080/account/find/${sessionEmail}`;
+      const url = `http://localhost:8080/account/find/${sessionEmail}`;
+      // const url = `http://165.232.72.24:8080/account/find/${sessionEmail}`;
       await axios.get(url)
       .then((res) =>{
         ctx.user.push(...res.data);
@@ -65,7 +69,6 @@ function Login(props){
   }
 //Validate and submit account data.
 async function handleLogin() {
-  // console.log(name,email,password);
     setTimeout(() => setStatus(''),4000);
     let expires = new Date();
     expires.setMinutes( expires.getMinutes() + 30 );
@@ -74,8 +77,8 @@ async function handleLogin() {
         passwordValidation(password)
     ){
                 ctx.loginRes.pop();
-                // const url = `http://localhost:8080/account/find/${email}`;
-                const url = `http://165.232.72.24:8080/account/find/${email}`;
+                const url = `http://localhost:8080/account/signin/${email}//${password}`;
+                // const url = `http://165.232.72.24:8080/account/signin/${email}/${password}`;
                 await axios.get(url)
                 .then((res) =>{
                   ctx.loginRes.push(res.data);
@@ -122,7 +125,7 @@ async function handleLogin() {
       status={status}
       body={ 
 //if log in is successful show component
-        show ? ( 
+        show ? ( <>
           <form>
             <InputGroup className="mb-3" >
               <Col xs="5" >
@@ -144,7 +147,7 @@ async function handleLogin() {
                   <InputGroup.Text  >Password</InputGroup.Text>
                 </InputGroup.Prepend> 
                 <FormControl
-                  type="input"
+                  type="password"
                   id="password"
                   placeholder="Enter password"
                   value={password}
@@ -163,6 +166,8 @@ async function handleLogin() {
               Login
             </Button>       
           </form> 
+              <SignInScreen/>
+              </>
             ):(!ctx.auth[0].loggedIn ? ( 
               <div>
               <h5>{`${ctx.loginRes}`}</h5>

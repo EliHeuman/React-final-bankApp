@@ -6,7 +6,7 @@ function DisplayName(props){
     return (
         <Nav.Item className="navbar-brand">
             <Button >
-                {`NameDisplay ${user}`}
+                {`${user}`}
             </Button>
         </Nav.Item>  
         )

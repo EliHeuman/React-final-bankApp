@@ -12,6 +12,7 @@ function NavBar(props){
   console.log(ctx.user[0]);
   console.log(Cookies.Name);
   console.log(cookieValue);
+
   return(
   //Navbar usinng Bootstrap.
     <Nav variant="pills"  className="navbar navbar-expand-lg navbar-dark bg-dark">

@@ -10,8 +10,8 @@ import Deposit from './components/deposit.js';
 import Withdraw from './components/withdraw.js';
 import Logout from './components/logout';
 import Login from './components/login';
-
-  
+import SignInScreen from './components/SignInScreen';
+import FaildToSignIn from './components/Faildsignin';
 function App (){
   const  getCookie = (cname) => {
     let name = cname + "=";
@@ -47,7 +47,9 @@ function App (){
             <Route path="/CreateAccount/" exact component={CreateAccount} />
             <Route path="/deposit/"       exact component={Deposit} />
             <Route path="/withdraw/"      exact component={Withdraw} />
-            <Route path="/logout/"        exact component={Logout} />    
+            <Route path="/logout/"        exact component={Logout} />
+            <Route path="/SignInScreen/"  exact component={SignInScreen} /> 
+            <Route path="/faildToSignIn/"  exact component={FaildToSignIn} />  
         </UserContext.Provider>
       </HashRouter>
     )

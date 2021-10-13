@@ -1,11 +1,13 @@
 //This Context page is for components that get used in more than one place.
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import 'bootstrap';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Button from 'react-bootstrap/Button';
 import FormControl from 'react-bootstrap/FormControl';
 const UserContext = React.createContext(null);
 const axios = require('axios');
+
+
 
 //ATM is the banking interface component.
 function ATM(props) {
@@ -83,8 +85,8 @@ async function balanceUpdate (){
   console.log(`balanceUpdate props + ${ctx.user[0].balance}`);
   const amount = ctx.user[0].balance;
   const email  = ctx.user[0].email;
-  // const url = `http://localhost:8080/update/${email}/${amount}`;
-  const url = `http://165.232.72.24:8080/update/${email}/${amount}`;        
+  const url = `http://localhost:8080/update/${email}/${amount}`;
+  // const url = `http://165.232.72.24:8080/update/${email}/${amount}`;        
                 await axios.get(url)
                 .then((res) =>{
                   console.log(res);
@@ -141,6 +143,7 @@ function Card(props){
       </div>      
     );    
 };
+
 
 //export components
 export {Card, UserContext, ATM, Account};
