@@ -42,7 +42,7 @@ function SignInScreen(props) {
             ctx.loginRes.pop();
             ctx.user.pop();
             // const url = `http://localhost:8080/account/find/${userEmail}`;
-            const url = `http://165.232.72.24:8080/account/find/${sessionEmail}`;
+            const url = `http://165.232.72.24:8080/account/find/${userEmail}`;
             await axios.get(url)
                 .then((res) =>{
                   ctx.loginRes.push(res.data);
