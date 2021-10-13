@@ -5,6 +5,7 @@ import {UserContext} from '../context.js';
 //badgoogle auth
 function FaildToSignIn (){
     const ctx = React.useContext(UserContext);
+    setTimeout(window.location.reload(true),3000);
     return(
       <Card
           txtcolor="white"

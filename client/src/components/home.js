@@ -13,7 +13,7 @@ function Home(props){
       header="RedRock BadBank"
       
       title="Welcome to RedRock bank"
-      text="You can move around using the navigation bar."
+      text="Eli-HeumanFullStackBankingApplication, You can move around using the navigation bar."
       bgcolor="dark"
       body={( 
         <img 

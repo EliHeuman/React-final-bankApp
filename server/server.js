@@ -73,19 +73,19 @@ app.get('/update/:email/:amount', async (req, res) => {
   res.send('User created \n');
 });
 
-app.get('/user-create/:name/:email/:password', async (req, res) => {
-  const user = new User({
-    username: req.params.name,
-    email: req.params.email,
-    password: req.params.password,
-    balance: 0,
-  });
-  console.log(user);
+// app.get('/user-create/:name/:email/:password', async (req, res) => {
+//   const user = new User({
+//     username: req.params.name,
+//     email: req.params.email,
+//     password: req.params.password,
+//     balance: 0,
+//   });
+//   console.log(user);
 
-await user.save().then(() => console.log('User created'));
+// await user.save().then(() => console.log('User created'));
 
-res.send('User created \n');
-});
+// res.send('User created \n');
+// });
 
 // create user account
 app.post('/account/create/:name/:email/:password', async (req, res) => {
@@ -128,7 +128,6 @@ app.get('/', (req, res) => {
 });
 
 //finde user
-
 app.get('/account/find/:email', async (req, res) => {
   //get list of users
   const users = await User.find()
@@ -150,8 +149,32 @@ app.get('/account/find/:email', async (req, res) => {
         }
 });
 
-
-
+//finde user
+app.get('/account/signin/:email/:password', async (req, res) => {
+  //get list of users
+  const users = await User.find()
+  .catch( (error) => {
+    console.error(error); 
+  });
+  // check if account exists
+  const userTest =[];
+  userTest.push(await users.find( (user) => user.email === req.params.email));
+    console.log(userTest[0]);
+    // console.log(req.params.email);
+        if(userTest[0] !== undefined ){
+          if(userTest[0].password ===  req.params.password){
+          // if user exists, return user
+              res.status(200).send(JSON.stringify(userTest[0]));
+          }
+          console.log('Wrong password');
+          res.status(200).send('Wrong password');
+          return;
+        }else{
+          
+          console.log('User doesn\'t exists');
+          res.status(200).send('User doesn\'t exists');   
+        }
+});
 
 // start server
 // -----------------------

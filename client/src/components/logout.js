@@ -33,7 +33,6 @@ function Logout(){
         ctx.auth[0].loggedIn = false;
         deleteAllCookies();
         firebase.auth().signOut();
-        
       };
       logout();
   return (

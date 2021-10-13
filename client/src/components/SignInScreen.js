@@ -26,13 +26,12 @@ function SignInScreen(props) {
   const ctx = React.useContext(UserContext);
   let expires = new Date();
       expires.setMinutes( expires.getMinutes() + 250 );
-      let signInUrl =  (ctx.auth[0].loggedIn ? '/login' : '/faildToSignIn');
   // Configure FirebaseUI.
       const uiConfig = {
         // Popup signin flow rather than redirect flow.
         signInFlow: 'popup',
         // Redirect to /signedIn after sign in is successful. Alternatively you can provide a callbacks.signInSuccess function.
-        signInSuccessUrl:  `${signInUrl}`,
+        signInSuccessUrl: "/" ,
         callbacks: {
           signInSuccessWithAuthResult: async (authResult) => {
             const userEmail = authResult.user.email;
@@ -65,6 +64,8 @@ function SignInScreen(props) {
                       expires,
                     });
                     alert("Login successful!");
+                  }else{
+                    alert("Login failed!");
                   }
                 });
                   console.log('loggedIn: ' + ctx.auth[0].loggedIn);

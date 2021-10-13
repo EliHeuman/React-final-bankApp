@@ -232,7 +232,7 @@ async function handleCreate() {
                   <div>
                   <h3>Welcom to BadBank you are logged in.<br/>
                    First log out before try to create a new account</h3>
-                   <h5>{`${ctx.loginRes[0]}`}</h5>
+                   <h5>{`${(ctx.loginRes[0] ? ctx.loginRes[0] : '')}`}</h5>
                   </div>
               )
               )}

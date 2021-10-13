@@ -17,13 +17,25 @@ function Login(props){
   const [status, setStatus]           = React.useState('');
   const [email, setEmail]             = React.useState('');
   const [password, setPassword]       = React.useState('');
-  const [validButton, setvalidButton] = React.useState(false);
+  // const [validButton, setvalidButton] = React.useState(false);
   const [cookies, setCookie] = useCookies(["user"]);
+
+  function deleteAllCookies() {
+    var cookies = document.cookie.split(";");
+
+    for (var i = 0; i < cookies.length; i++) {
+        var cookie = cookies[i];
+        var eqPos = cookie.indexOf("=");
+        var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+        document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    }
+}
    //test if user is logedin
    let cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)Name\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-
-   let sessionEmail = cookieValue.length > 0 ? props.allCookies.User.email : '';
-   let googleEmail  = cookieValue.length > 0 ? props.allCookies.Email : '';
+  console.log(cookieValue);
+   let sessionEmail = ((cookieValue.length > 0) && (cookieValue !== 'undefined') ? props.allCookies.User.email : '');
+   let sessionPassword = ((cookieValue.length > 0) && (cookieValue !== 'undefined') ? props.allCookies.User.password : '');
+   let googleEmail  = cookieValue.length ? props.allCookies.Email : '';
    console.log(sessionEmail);
 
    useEffect(()=>{
@@ -32,19 +44,36 @@ function Login(props){
       let expires = new Date();
       expires.setMinutes( expires.getMinutes() + 250 );
       
-      ctx.loginRes.pop();
+      
       ctx.user.pop();
-      const url = `http://localhost:8080/account/find/${sessionEmail}`;
-      // const url = `http://165.232.72.24:8080/account/find/${sessionEmail}`;
-      await axios.get(url)
-      .then((res) =>{
-        ctx.user.push(...res.data);
-      }).catch((err) =>{
-        console.log(err);
-      });
-        ctx.auth[0].loggedIn = true;
-        setShow(false);
-        console.log('loggedIn: ' + ctx.auth[0].loggedIn);
+      const url = `http://localhost:8080/account/signin/${sessionEmail}/${sessionPassword}`;
+      // const url = `http://165.232.72.24:8080/account/signin/${email}/${password}`;
+     await axios.get(url)
+                .then((res) =>{
+                  console.log(res);
+                  ctx.loginRes.splice(0,ctx.loginRes.length);
+                  ctx.loginRes.push(res.data);
+                  ctx.user.push(ctx.loginRes[0]);
+                  ctx.dispalyName.push(res.data[0].username);
+                  console.log(ctx.loginRes[0]);
+                }).catch((err) =>{
+                  console.log(err);
+                }).then(() =>{
+                if((ctx.loginRes[0] !== 'User doesn\'t exists') && (ctx.loginRes[0] !==  'Wrong password')){
+                    ctx.auth[0].loggedIn = true;
+                    ctx.loginRes[0] = 'Success';
+                   setCookie('User', ctx.user[0], { 
+                      path: "/",
+                      expires,
+                    });
+                    setCookie('Name', ctx.user[0].username, { 
+                      path: "/",
+                      expires,
+                    });
+                  }
+                });
+                  console.log('loggedIn: ' + ctx.auth[0].loggedIn);
+                  setShow(false);
       }
       ifSignIn();
     }
@@ -76,30 +105,37 @@ async function handleLogin() {
         emailValidation(email      ) &&
         passwordValidation(password)
     ){
-                ctx.loginRes.pop();
-                const url = `http://localhost:8080/account/signin/${email}//${password}`;
+               
+                const url = `http://localhost:8080/account/signin/${email}/${password}`;
                 // const url = `http://165.232.72.24:8080/account/signin/${email}/${password}`;
                 await axios.get(url)
                 .then((res) =>{
+                  console.log(ctx.loginRes.length);
+                  ctx.loginRes.splice(0,ctx.loginRes.length);
                   ctx.loginRes.push(res.data);
-                  setCookie('User', res.data[0], { 
-                    path: "/",
-                    expires,
-                  });
-                  ctx.dispalyName.push(res.data[0].username);
+                  console.log(ctx.loginRes);
+                  ctx.loginRes.push(res.data);
+                  ctx.dispalyName.push(res.data.username);
                   console.log(ctx.loginRes[0]);
                 }).catch((err) =>{
                   console.log(err);
                 }).then(() =>{
-                if(ctx.loginRes[0] !== 'User doesn\'t exists'){
-                    ctx.user.push(...ctx.loginRes[0]);
-                    ctx.auth[0].loggedIn = true;
-                    ctx.loginRes[0] = 'Success';
-                    setCookie('Name', ctx.user[0].username, { 
+                if((ctx.loginRes[0] !== 'User doesn\'t exists') && (ctx.loginRes[0] !== 'Wrong password')){
+                    ctx.user.push(ctx.loginRes[0]);
+                    setCookie('User', ctx.loginRes[0], { 
                       path: "/",
                       expires,
                     });
+                    ctx.auth[0].loggedIn = true;
+                    setCookie('Name', ctx.loginRes[0].username, { 
+                      path: "/",
+                      expires,
+                    });
+                    ctx.loginRes[0] = 'Success';
                   }
+                  // else{
+                  //   deleteAllCookies();
+                  // }
                 });
                   console.log('loggedIn: ' + ctx.auth[0].loggedIn);
                   setShow(false);
@@ -111,13 +147,14 @@ async function handleLogin() {
     setEmail('');
     setPassword('');
     setShow(true);
+    // setvalidButton(false);
   }
 
   //Disables and enables the submit button.
   function handleChange (props){
     if(props.id === 'email') setEmail(props.value);
     if(props.id === 'password') setPassword(props.value);
-    }
+  }
   return (<>
     <Card
       header="Login"
@@ -160,17 +197,19 @@ async function handleLogin() {
               style={{float:'left',  margin: "15px"}}
               className="btn btn-dark" type="submit"
               value="Submit" id="submit-input"
-              disabled={validButton}
+              // disabled={validButton}
               onClick={handleLogin}
             >
               Login
             </Button>       
           </form> 
-              <SignInScreen/>
+              <div style={{"margin": "auto !important",   "width": "100px !important" , "padding": "5px !important"}} >
+                <SignInScreen/>
+              </div>
               </>
             ):(!ctx.auth[0].loggedIn ? ( 
               <div>
-              <h5>{`${ctx.loginRes}`}</h5>
+              <h5>{`${ctx.loginRes[0]}`}</h5>
               <Button
                 variant="outline-secondry"
                 type="submit"
