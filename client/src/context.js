@@ -81,8 +81,8 @@ async function balanceUpdate (){
   console.log(`balanceUpdate props + ${ctx.user[0].balance}`);
   const amount = ctx.user[0].balance;
   const email  = ctx.user[0].email;
-  const url = `http://localhost:8080/update/${email}/${amount}`;
-  // const url = `http://165.232.72.24:8080/update/${email}/${amount}`;        
+  // const url = `http://localhost:8080/update/${email}/${amount}`;
+  const url = `http://165.232.72.24:8080/update/${email}/${amount}`;        
                 await axios.get(url)
                 .then((res) =>{
                   console.log(res);
