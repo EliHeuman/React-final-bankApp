@@ -46,8 +46,8 @@ function Login(props){
       
       
       ctx.user.pop();
-      const url = `http://localhost:8080/account/signin/${sessionEmail}/${sessionPassword}`;
-      // const url = `http://165.232.72.24:8080/account/signin/${email}/${password}`;
+      // const url = `http://localhost:8080/account/signin/${sessionEmail}/${sessionPassword}`;
+      const url = `http://165.232.72.24:8080/account/signin/${email}/${password}`;
      await axios.get(url)
                 .then((res) =>{
                   console.log(res);
@@ -106,8 +106,8 @@ async function handleLogin() {
         passwordValidation(password)
     ){
                
-                const url = `http://localhost:8080/account/signin/${email}/${password}`;
-                // const url = `http://165.232.72.24:8080/account/signin/${email}/${password}`;
+                // const url = `http://localhost:8080/account/signin/${email}/${password}`;
+                const url = `http://165.232.72.24:8080/account/signin/${email}/${password}`;
                 await axios.get(url)
                 .then((res) =>{
                   console.log(ctx.loginRes.length);
