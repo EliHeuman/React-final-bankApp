@@ -32,8 +32,8 @@ function CreateAccount(props){
         
         ctx.loginRes.pop();
         ctx.user.pop();
-        // const url = `http://localhost:8080/account/find/${sessionEmail}`;
-        const url = `http://165.232.72.24:8080/account/find/${sessionEmail}`;
+        const url = `http://localhost:8080/account/find/${sessionEmail}`;
+        // const url = `http://165.232.72.24:8080/account/find/${sessionEmail}`;
         await axios.get(url)
         .then((res) =>{
           ctx.user.push(...res.data);
@@ -85,10 +85,10 @@ async function handleCreate() {
     ){
       ctx.loginRes.pop();
      // console.log(name,email,password);
-      // const url = `http://localhost:8080/account/create/${name}/${email}/${password}`;
-      // const  url2 = `http://localhost:8080/account/find/${email}`;
-      const url = `http://165.232.72.24:8080/account/create/${name}/${email}/${password}`;
-      const  url2 = `http://165.232.72.24:8080/account/find/${email}`;
+      const url = `http://localhost:8080/account/create/${name}/${email}/${password}`;
+      const  url2 = `http://localhost:8080/account/find/${email}`;
+      // const url = `http://165.232.72.24:8080/account/create/${name}/${email}/${password}`;
+      // const  url2 = `http://165.232.72.24:8080/account/find/${email}`;
       const testFetch = async () => {
         await axios.post(url)
             .then((res) =>{

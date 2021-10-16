@@ -41,6 +41,7 @@ function App (){
   {/* Create a context provider and a users array to share data in the components. */}
         <UserContext.Provider value={{user:[], loginRes:[], auth:[{ loggedIn: false}], dispalyName :[]}}>
           <Navbar />
+          <Route path= "/Eli-HeumanFullStackBankingApplication"              exact component={Home} />
             <Route path= "/"              exact component={Home} />
             <Route path= "/alldata"       exact component={AllData} />
             <Route path="/login/"         exact component={Login} />
